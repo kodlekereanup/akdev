@@ -31,14 +31,14 @@ std::vector<NQueen> HillClimbingRandomRestart :: generateBoard() {
 }
 
 void HillClimbingRandomRestart :: printState(std::vector<NQueen> board) {
-	bool temp[N][N];
+	int temp[N][N] = {0};
 	
 	for(int i = 0; i < N; i++) 
-		temp[board[i].getRow()][board[i].getCol()] = true;
+		temp[board[i].getRow()][board[i].getCol()] = 1;
 
 	for(int i = 0; i < N; i++) {
 		for(int j = 0; j < N; j++) {
-			if(temp[i][j]) std::cout << "Q ";
+			if(temp[i][j] == 1) std::cout << "Q ";
 			else std::cout << ". ";
 		}
 		std::cout << "\n";
@@ -53,12 +53,12 @@ void HillClimbingRandomRestart :: printState(std::vector<NQueen> board) {
 } 
 
 int HillClimbingRandomRestart :: findHeuristic(std::vector<NQueen> board) {
-	int heuristic = 0;
+	int heuri = 0;
 	for (int i = 0; i < board.size(); i++) 
         for (int j= i + 1; j < board.size(); j++ ) 
-            if (board.at(i).ifConflict(board.at(j))) heuristic++;
+            if (board.at(i).ifConflict(board.at(j))) heuri++;
             
-    return heuristic;
+    return heuri;
 }
 
 int main() {
