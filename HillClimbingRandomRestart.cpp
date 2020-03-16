@@ -1,17 +1,18 @@
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
+#include <cstring>
 #include <time.h>
 #include "NQueen.h"
 
 int inline RANDOM_VAL(int n) { return rand() % n; }
 
 class HillClimbingRandomRestart {
+
 	int N = 8;
 	int steps;
 	int restarts;
 	int heuristic;
-
 public:
 	std::vector<NQueen> generateBoard();
 	void printState(std::vector<NQueen>);
@@ -24,21 +25,23 @@ std::vector<NQueen> HillClimbingRandomRestart :: generateBoard() {
 	std::vector<NQueen> initBoard(N);
 	srand(time(0));
 	for(int i = 0; i < N; i++) {
-		initBoard.at(i).row = RANDOM_VAL(N);
-		initBoard.at(i).col = i;
+		NQueen t(RANDOM_VAL(N), i);
+		initBoard.at(i) = t;
 	}
 	return initBoard;
 }
 
 void HillClimbingRandomRestart :: printState(std::vector<NQueen> board) {
-	int temp[N][N] = {0};
+	bool temp[N][N];
+
+	memset(temp, false, sizeof(temp));
 	
 	for(int i = 0; i < N; i++) 
-		temp[board[i].getRow()][board[i].getCol()] = 1;
+		temp[board[i].getRow()][board[i].getCol()] = true;
 
 	for(int i = 0; i < N; i++) {
 		for(int j = 0; j < N; j++) {
-			if(temp[i][j] == 1) std::cout << "Q ";
+			if(temp[i][j]) std::cout << "Q ";
 			else std::cout << ". ";
 		}
 		std::cout << "\n";
@@ -47,18 +50,18 @@ void HillClimbingRandomRestart :: printState(std::vector<NQueen> board) {
 	std::cout << "\n\n";
 
 	for(int i = 0; i < N; i++) {
-		std::cout << board.at(i).row << " " <<  board.at(i).col << "\n";
+		std::cout << board.at(i).getRow() << " " <<  board.at(i).getCol() << "\n";
 	}
 
 } 
 
 int HillClimbingRandomRestart :: findHeuristic(std::vector<NQueen> board) {
-	int heuri = 0;
+	int heuristics = 0;
 	for (int i = 0; i < board.size(); i++) 
         for (int j= i + 1; j < board.size(); j++ ) 
-            if (board.at(i).ifConflict(board.at(j))) heuri++;
+            if (board.at(i).ifConflict(board.at(j))) heuristics++;
             
-    return heuri;
+    return heuristics;
 }
 
 int main() {

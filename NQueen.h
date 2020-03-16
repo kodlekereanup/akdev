@@ -1,8 +1,8 @@
 class NQueen {
-public:
+
 	int row;
 	int col;
-
+public:
 	NQueen();
 	NQueen(int, int); //row, col
 	void move();
