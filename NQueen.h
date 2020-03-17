@@ -22,7 +22,7 @@ void NQueen :: move() { row++; }
 
 bool NQueen :: ifConflict(NQueen q) {
 	if(row == q.getRow() || col == q.getCol()) return true;
-	else if(abs(col - q.getCol()) == abs(row - q.getRow())) return true;
+	else if(abs(row - q.getRow()) == abs(col - q.getCol())) return true;
 	else return false;
 }
 
