@@ -3,24 +3,37 @@
 #include <stdlib.h>
 #include <cstring>
 #include <time.h>
+#include <fstream>
 #include "NQueen.h"
 
 int inline RANDOM_VAL(int n) { return rand() % n; }
 
 class HillClimbingRandomRestart {
-
-public:
-	int N = 8;
+	int N;
 	int steps;
 	int restarts;
 	int heuristic;
+public:
+
+	HillClimbingRandomRestart(int n)  : N(n) { }
+
+	int getSteps();
+	int getRestarts();
+	int getHeuristic();
 
 	std::vector<NQueen> generateBoard();
 	void printState(std::vector<NQueen>);
+	
 	int findHeuristic(std::vector<NQueen>);
 	std::vector<NQueen> nextBoard(std::vector<NQueen>);
 
 };
+
+int HillClimbingRandomRestart :: getSteps()    { return steps;     }
+
+int HillClimbingRandomRestart :: getRestarts() { return restarts;  }
+
+int HillClimbingRandomRestart :: getHeuristic() { return heuristic; }
 
 std::vector<NQueen> HillClimbingRandomRestart :: generateBoard() {
 	std::vector<NQueen> initBoard(N);
@@ -40,6 +53,7 @@ void HillClimbingRandomRestart :: printState(std::vector<NQueen> board) {
 	for(int i = 0; i < N; i++) 
 		temp[board[i].getRow()][board[i].getCol()] = true;
 
+	std::cout << "\n\n";
 	for(int i = 0; i < N; i++) {
 		for(int j = 0; j < N; j++) {
 			if(temp[i][j]) std::cout << "Q ";
@@ -47,13 +61,13 @@ void HillClimbingRandomRestart :: printState(std::vector<NQueen> board) {
 		}
 		std::cout << "\n";
 	}
-
 	std::cout << "\n\n";
 
+	/*
 	for(int i = 0; i < N; i++) {
 		std::cout << board.at(i).getRow() << " " <<  board.at(i).getCol() << "\n";
 	}
-
+	*/
 } 
 
 int HillClimbingRandomRestart :: findHeuristic(std::vector<NQueen> board) {
@@ -65,6 +79,28 @@ int HillClimbingRandomRestart :: findHeuristic(std::vector<NQueen> board) {
     return heuristics;
 }
 
+void outputToFile(std::ofstream& fout, std::vector<NQueen> board) {
+
+	int N = board.size();
+	bool temp[N][N];
+
+	memset(temp, false, sizeof(temp));
+	
+	for(int i = 0; i < N; i++) 
+		temp[board[i].getRow()][board[i].getCol()] = true;
+
+	fout << "\n\n";
+	for(int i = 0; i < N; i++) {
+		for(int j = 0; j < N; j++) {
+			if(temp[i][j]) fout << "Q ";
+			else fout << ". ";
+		}
+		fout << "\n";
+	}
+	fout << "\n\n";
+
+}
+
 std::vector<NQueen> HillClimbingRandomRestart :: nextBoard(std::vector<NQueen> currentBoard) {
 
 	std::vector<NQueen> bestBoard(N), temp(N);
@@ -74,6 +110,8 @@ std::vector<NQueen> HillClimbingRandomRestart :: nextBoard(std::vector<NQueen> c
 	bestBoard = currentBoard;
 	temp = bestBoard;
 
+	std::ofstream fout;
+	fout.open("output.txt", std::ios::app);
 
     for (int i = 0; i < N; i++) {
         if (i > 0) {
@@ -81,8 +119,10 @@ std::vector<NQueen> HillClimbingRandomRestart :: nextBoard(std::vector<NQueen> c
         	temp.at(i - 1) = q; 
         }
         NQueen q(0, temp.at(i).getCol());
-        temp[i] = q;
+        temp.at(i) = q;
         
+        //outputToFile(fout, temp);
+
         for (int j = 0; j < N; j++) {
             
             int tempH = findHeuristic(temp);
@@ -104,30 +144,41 @@ std::vector<NQueen> HillClimbingRandomRestart :: nextBoard(std::vector<NQueen> c
 
     steps++;
     
+    fout.close();
     return bestBoard;
     
 }
 
 int main() {
 
-	const int n = 8;
+	int size;
+	std::cout << "\n Enter the size of the board: ";
+	std::cin >> size;
 	
-	HillClimbingRandomRestart algo;
+	if(size <= 3) {
+		std::cout <<"\n No Solution \n";
+		exit(0);
+	}
+
+	HillClimbingRandomRestart algo(size);
 
 	std::vector<NQueen> board = algo.generateBoard();
+	
+	std::cout << "Initial Configuration: \n";
 	algo.printState(board);
 
 	int presentHeuristic = algo.findHeuristic(board);
 
     while (presentHeuristic != 0) {
         board = algo.nextBoard(board);
-        presentHeuristic  = algo.heuristic;
+        presentHeuristic  = algo.getHeuristic();
     }
 
+    std::cout << "Solution: \n";
     algo.printState(board);
     
-    std::cout << "Steps: " << algo.steps << "\n"; 
-    std::cout << "Restarts: " << algo.restarts << "\n";
+    std::cout << "Steps: " << algo.getSteps() << "\n"; 
+    std::cout << "Restarts: " << algo.getRestarts() << "\n";
 
 	return 0;
 }
